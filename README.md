@@ -1,69 +1,108 @@
-# Credit-Risk-Anomaly-Detection
+# Credit Risk Anomaly Detection
 
-**API REST (Python/Flask) pour le scoring de risque de crédit et la détection d'anomalies en temps réel.**
-
-## Objectif du Projet
-
-Ce projet consiste à développer un service web complet (API REST) capable d'évaluer en temps réel les demandes de prêt. Le service remplit trois fonctions principales :
-1.  **Analyser** une demande de prêt soumise en JSON.
-2.  **Prédire** la probabilité de défaut de paiement (scoring de crédit) à l'aide d'un modèle de machine learning.
-3.  **Détecter** si la demande présente un caractère atypique ou potentiellement frauduleux (détection d'anomalies).
-4.  **Servir** ces prédictions via un endpoint sécurisé et performant.
+**A REST API (Python/Flask) for real-time credit risk scoring and anomaly detection on loan applications.**
 
 ---
 
-### Phase 1 : Conception de la Base de Données et Data Engineering
+## Overview
 
-* **Objectif :** Mettre en place l'infrastructure de données (data persistence layer) simulant un environnement bancaire. Cette base sert de "source de vérité" (Single Source of Truth) pour l'entraînement et la validation des modèles.
-* **Compétences et Technologies :**
-    * **[ ] SGBD Relationnel (MySQL/MariaDB)** : Conception d'un schéma relationnel optimisé incluant les tables `clients` (données démographiques), `comptes` (soldes, historique), `demandes_de_pret` (montant, durée, etc.) et la variable cible `statut_pret` (Remboursé / Défaut).
-    * **[ ] SQL & Optimisation** : Développement de requêtes SQL performantes pour l'extraction des données. Documentation des stratégies d'indexation visant à garantir une faible latence.
-    * **[ ] Data Engineering** : Application des principes d'ingénierie des données pour assurer la cohérence et l'intégrité du schéma.
+Flask-based REST API that evaluates loan applications in real time using two ML models:
+- **Credit Scoring** — Random Forest classifier predicting the probability of default.
+- **Anomaly Detection** — Isolation Forest flagging atypical or potentially fraudulent applications.
 
-### Phase 2 : Modélisation, IA et Data Science
+A lightweight HTML/CSS/JS frontend consumes the API and visualizes results.
 
-* **Objectif :** Développer, entraîner et évaluer les deux cœurs algorithmiques du service : un modèle de scoring de crédit (classification supervisée) et un modèle de détection d'anomalies (non supervisé).
-* **Compétences et Technologies :**
-    * **[ ] R&D (Jupyter Notebooks)** : Utilisation de notebooks pour l'analyse exploratoire des données (EDA), le prototypage et l'évaluation des modèles.
-    * **[ ] Python (Pandas, NumPy)** : Scripts d'extraction, de nettoyage (cleaning) et de transformation (feature engineering) des données issues de la base SQL.
-    * **[ ] Data Visualization (Matplotlib/Seaborn)** : Création de visualisations pour analyser les profils des emprunteurs et la distribution des variables.
-    * **[ ] Machine Learning (Scikit-learn)** :
-        * **[ ] Modèle 1 (Scoring de Crédit)** : Entraînement d'un modèle de classification (ex: Random Forest, Gradient Boosting) pour prédire `statut_pret`.
-        * **[ ] Modèle 2 (Détection d'Anomalies)** : Entraînement d'un modèle non supervisé (ex: Isolation Forest) pour identifier les demandes atypiques.
+---
 
-### Phase 3 : Industrialisation (API REST & DevOps)
+## Stack
 
-* **Objectif :** "Industrialiser" les modèles de machine learning en les exposant via une API REST robuste, performante et scalable. Mise en place d'un pipeline d'intégration et de déploiement continus (CI/CD).
-* **Compétences et Technologies :**
-    * **[ ] Back-end (Flask)** : Développement d'une API RESTful en Python (similaire à [l'expérience chez Digital Life Data](https://www.linkedin.com/in/easy-eight-e8/details/experience/)) pour servir les modèles.
-    * **[ ] API Design** : Création d'un endpoint principal `/score` acceptant les données de demande en JSON et retournant un score de risque et un flag d'anomalie.
-    * **[ ] Conteneurisation (Docker)** : Création d'un `Dockerfile` pour encapsuler l'application Flask et ses dépendances, assurant une portabilité et une reproductibilité parfaites.
-    * **[ ] CI/CD (Git / GitHub Actions)** : Hébergement du code source sur [GitHub (Easy Eight E8)](https://github.com/Easy-Eight-E8) et configuration d'un pipeline CI/CD simple pour automatiser le build de l'image Docker à chaque `push`.
+| Layer | Technology |
+|---|---|
+| API | Python 3.9, Flask, scikit-learn, joblib |
+| Models | Random Forest, Isolation Forest (`.pkl`) |
+| Data | MySQL/MariaDB, Pandas, NumPy |
+| Frontend | HTML, CSS, Vanilla JS (`fetch`) |
+| DevOps | Docker, GitHub Actions |
 
-### Phase 4 : Interface de Consommation (Front-End)
+---
 
-* **Objectif :** Développer une interface utilisateur légère (client web) pour consommer l'API. Cette interface sert de démonstrateur et permet de soumettre de nouvelles demandes et de visualiser les scores en temps réel.
-* **Compétences et Technologies :**
-    * **[ ] Front-end (HTML, CSS, JavaScript)** : Création d'une page web statique avec un formulaire pour saisir les informations d'une demande de prêt.
-    * **[ ] Interaction API (JavaScript)** : Utilisation de l'API `fetch` (ou `async/await`) pour appeler l'endpoint `/score` de l'API Flask de manière asynchrone et afficher la réponse à l'utilisateur.
-    * **[ ] *Alternative (PHP)*:** (Envisageable) Utilisation de [PHP](https://www.linkedin.com/in/easy-eight-e8/details/experience/) pour générer le formulaire côté serveur, bien qu'une approche JS client-side soit plus moderne pour une API REST.
+## Project Structure
 
-### Phase 5 : Analyse Métier et Contexte Macro-économique
+```
+api/
+  app.py                  # Flask app — /score endpoint
+  Dockerfile
+  requirements.txt
+  models/
+    anomaly_model_scoring_credit.pkl
+    anomaly_model_detection_anomalies.pkl
+database/
+  schema.sql              # Relational schema (clients, comptes, demandes_de_pret)
+  generate_data.py        # Synthetic data generation
+  simulated_loans.csv
+notebooks/
+  exploration.ipynb       # EDA
+  scoring_credit.ipynb    # Credit scoring model training
+  detection_anomalies.ipynb # Anomaly detection model training
+frontend/
+  index.html
+  style.css
+  app.js
+```
 
-* **Objectif :** Démontrer une compréhension approfondie des limites d'un modèle purement "statique" et proposer une feuille de route d'amélioration en intégrant des facteurs de risque de marché.
-* **Compétences et Technologies :**
-    * **[ ] Analyse Financière** : Rédaction d'une analyse critique dans ce `README` sur les limites du modèle (basé uniquement sur des données "micro" et idiosyncratiques).
-    * **[ ] Connaissances Marché (Bloomberg)** : Proposition conceptuelle d'amélioration du modèle par l'intégration de "features" macro-économiques (ex: taux directeurs, taux de chômage, volatilité) pour capturer le risque systémique.
-    * **[ ] Extraction de Données (Bloomberg BQL/BFF)** : Explication de la méthode d'extraction de ces données via les [API Bloomberg (BMC, BFF, BQL)](https://www.linkedin.com/in/easy-eight-e8/details/skills/) pour enrichir le "feature set" du modèle de scoring.
+---
 
-#### Analyse critique 
+## API
 
-Le modèle de scoring de crédit actuel (`credit_model.pkl`) est basé uniquement sur des données microéconomiques et statiques relatives à l'emprunteur au moment de la demande il présente une limite majeure : il ne prend pas en compte l'environnement macroéconomique*et le risque de marché.
+### `GET /`
+Health check. Returns model load status.
 
-Pour le rendre plus précis il faudrait ajouter des variables tels que :
+### `POST /score`
 
-- Taux de chômage
-- Croissance du PIB
-- Indice de confiance des consommateurs
-- Volatilité des marchés actions
-- Spreads de crédit
+**Request body (JSON):**
+```json
+{
+  "credit_score": 680,
+  "loan_amount": 15000,
+  "interest_rate": 5.5,
+  "borrower_income": 50000,
+  "term_months": 36,
+  "borrower_age": 35
+}
+```
+
+**Response:**
+```json
+{
+  "probability_of_default": 0.1423,
+  "is_anomaly": 0
+}
+```
+
+`is_anomaly: 1` indicates the application was flagged by the Isolation Forest model.
+
+---
+
+## Run with Docker
+
+```bash
+docker build -t credit-risk-api .
+docker run -p 5000:5000 credit-risk-api
+```
+
+---
+
+## Run locally
+
+```bash
+pip install -r api/requirements.txt
+python api/app.py
+```
+
+API available at `http://localhost:5000`.
+
+---
+
+## Model Limitations
+
+The current models rely solely on borrower-level microeconomic features. Systemic risk is not captured. Potential improvements include integrating macroeconomic indicators (unemployment rate, GDP growth, credit spreads, market volatility) via Bloomberg BQL/BFF APIs.
